@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const API_URL = "http://88.160.181.4:56162"; // 🔹 Assure-toi que c'est le bon port de ton backend
+    const API_URL = "http://88.160.181.4:56162";
 
     const loginCard = document.querySelector(".login-card");
     const registerCard = document.querySelector(".register-card");
@@ -20,14 +20,14 @@ document.addEventListener("DOMContentLoaded", function () {
     // 🔹 Détecte le clic sur "Créer un compte"
     showRegister.addEventListener("click", function (event) {
         event.preventDefault();
-        window.location.hash = "#register";  // ✅ Change l'URL
+        window.location.hash = "#register";
         updateView();
     });
 
     // 🔹 Détecte le clic sur "Se connecter"
     showLogin.addEventListener("click", function (event) {
         event.preventDefault();
-        window.location.hash = "#login";  // ✅ Change l'URL
+        window.location.hash = "#login";
         updateView();
     });
 
@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (data.success) {
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("userRole", data.role);
-                window.location.href = data.role === "admin" ? "admin.html" : "dashboard.html";
+                window.location.href = data.role === "admin" ? "dashboard.html" : "dashboard.html";
             } else {
                 document.getElementById("error-message").textContent = data.message;
             }

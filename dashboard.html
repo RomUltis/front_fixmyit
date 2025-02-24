@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard FixMyIT</title>
+    <link rel="stylesheet" href="styledash.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <h2>FixMyIT</h2>
+            <ul>
+                <li><a href="#" class="active">Dashboard</a></li>
+                <li><a href="#">Tickets</a></li>
+                <li><a href="#">Profil</a></li>
+                <li><a href="#">Déconnexion</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Stats Cards -->
+            <div class="stats-cards">
+                <div class="card">
+                    <h3>Total des Tickets</h3>
+                    <p id="total-tickets">0</p>
+                </div>
+                <div class="card">
+                    <h3>Tickets Résolus</h3>
+                    <p id="resolved-tickets">0</p>
+                </div>
+            </div>
+
+            <!-- Tickets Table -->
+            <div class="tickets-section">
+                <h2>Liste des Tickets</h2>
+                <table class="tickets-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Utilisateur</th>
+                            <th>Description</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tickets-list">
+                        <!-- Les tickets seront chargés ici -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script src="scriptdash.js"></script>
+
+<script src="scriptdash.js"></script>
+</body>
+</html>
