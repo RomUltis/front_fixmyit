@@ -185,6 +185,23 @@ app.post('/tickets/:id/messages', async (req, res) => {
     }
 });
 
+// Proxy pour récupérer tous les utilisateurs
+app.get('/users', async (req, res) => {
+    try {
+        const url = `${BACKEND_URL}/users`;
+        const response = await axios.get(url, {
+            headers: {
+                Authorization: req.headers.authorization
+            }
+        });
+
+        // ✅ Important : on renvoie directement les données brutes
+        res.json(response.data);
+    } catch (error) {
+        console.error("Erreur proxy GET /users :", error.response?.data || error.message);
+        res.status(500).json({ success: false, message: "Erreur API Proxy (GET /users)" });
+    }
+});
 
 // Page de test pour vérifier si le proxy fonctionne
 app.get('/', (req, res) => {

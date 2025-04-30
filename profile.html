@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil - FixMyIT</title>
+    <link rel="stylesheet" href="styleprofile.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Menu latéral -->
+        <nav class="sidebar">
+            <h2>FixMyIT</h2>
+            <ul>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="profil.html" class="active">Profil</a></li>
+                <li><a href="index.html">Déconnexion</a></li>
+            </ul>
+        </nav>
+
+        <!-- Contenu principal -->
+        <main class="main-content">
+            <h2>Mon Profil</h2>
+
+            <!-- Formulaire pour changer le pseudo et le mot de passe -->
+            <div class="card">
+                <form id="changeProfileForm">
+                    <h3>Changer de pseudo et mot de passe</h3>
+
+                    <div class="input-group">
+                        <input type="text" id="pseudo" name="pseudo" placeholder="Nouveau pseudo">
+                    </div>
+                    
+                    <div class="input-group">
+                        <input type="password" id="currentPassword" name="currentPassword" placeholder="Mot de passe actuel">
+                    </div>
+                    
+                    <div class="input-group">
+                        <input type="password" id="newPassword" name="newPassword" placeholder="Nouveau mot de passe">
+                    </div>                    
+
+                    <button type="submit" class="action-btn">Mettre à jour</button>
+                </form>
+            </div>
+
+            <!-- Section Administration (Visible uniquement pour les admins) -->
+            <div class="card" id="adminSection" style="display: none;">
+                <h3>Gestion des utilisateurs</h3>
+                <table class="tickets-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Pseudo</th>
+                            <th>Email</th>
+                            <th>Rôle</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userList">
+                        <!-- Les utilisateurs seront affichés ici -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+    
+    <script src="scripts/profil.js"></script>
+</body>
+</html>

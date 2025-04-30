@@ -2,6 +2,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const API_URL = "http://88.160.181.4:56162";
     const token = localStorage.getItem('token');
     const userRole = localStorage.getItem('role');
+    function escapeHTML(str) {
+        if (!str) return '';
+        return str
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }    
 
     if (!token) {
         window.location.href = 'login.html';
@@ -31,30 +40,32 @@ fetch(`${API_URL}/tickets`, {
     };
 
     tickets.forEach(ticket => {
-        const row = document.createElement('tr');
-        const color = statusColors[ticket.status] || 'grey';
+    const row = document.createElement('tr');
+    const color = statusColors[ticket.status] || 'grey';
 
-        const userName = ticket.user_name ? ticket.user_name : 'Utilisateur inconnu';
-        const description = ticket.description ? ticket.description : 'Pas de description';
+    const userName = escapeHTML(ticket.user_name ? ticket.user_name : 'Utilisateur inconnu');
+    const description = escapeHTML(ticket.description ? ticket.description : 'Pas de description');
 
-        // Bouton de suppression (affiché seulement pour les admins)
-        const role = localStorage.getItem('role');
-        const deleteButton = (role === 'admin') ? 
-            `<button class='action-btn delete-btn' data-id="${ticket.id}" style="background: #ff4d4d;">Supprimer</button>` : 
-            '';
+    const role = localStorage.getItem('role');
+    const deleteButton = (role === 'admin') ? 
+        `<button class='action-btn delete-btn' data-id="${ticket.id}" style="background: #ff4d4d;">Supprimer</button>` : 
+        '';
 
-        row.innerHTML = `
-            <td>${ticket.id}</td>
-            <td>${userName}</td>
-            <td>${description}</td>
-            <td style="color: ${color}; font-weight: bold;">${ticket.status}</td>
-            <td>
-                <button class='action-btn voir-btn' data-id="${ticket.id}">Voir</button>
-                ${deleteButton}
-            </td>
-        `;
-        ticketsList.appendChild(row);
-    });
+    const technicianName = escapeHTML(ticket.technician_name ? ticket.technician_name : 'Non assigné');
+
+    row.innerHTML = `
+        <td>${ticket.id}</td>
+        <td>${userName}</td>
+        <td>${description}</td>
+        <td style="color: ${color}; font-weight: bold;">${ticket.status}</td>
+        <td>${technicianName}</td>
+        <td>
+            <button class='action-btn voir-btn' data-id="${ticket.id}">Voir</button>
+            ${deleteButton}
+        </td>
+    `;            
+    ticketsList.appendChild(row);
+});
 
     // Ajout des événements pour les boutons "Voir"
     document.querySelectorAll('.voir-btn').forEach(button => {
@@ -92,7 +103,7 @@ fetch(`${API_URL}/tickets`, {
         .then(ticket => {
             document.getElementById('modal-ticket-id').textContent = ticket.id;
             document.getElementById('modal-ticket-user').textContent = ticket.user_name;
-            document.getElementById('modal-ticket-description').textContent = ticket.description;
+            document.getElementById('modal-ticket-description').textContent = ticket.description || 'Pas de description';
             document.getElementById('modal-ticket-status').value = ticket.status;
 
             document.getElementById('ticketModal').classList.add('show');
@@ -119,31 +130,33 @@ fetch(`${API_URL}/tickets`, {
     }
 
     // Fonction globale pour mettre à jour le statut du ticket
-window.mettreAJourStatut = function(ticketId, nouveauStatut) {
-    const url = `${API_URL}/tickets/${ticketId}`;
-
-    fetch(url, {
-        method: 'PUT',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ status: nouveauStatut })
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        alert('Statut mis à jour avec succès !');
-        document.getElementById('ticketModal').classList.remove('show');
-        location.reload();
-    })
-    .catch(err => console.error('Erreur lors de la mise à jour du statut:', err));
-};
-
+    window.mettreAJourStatut = function(ticketId, nouveauStatut, technicianId = null) {
+        const url = `${API_URL}/tickets/${ticketId}`;
+    
+        fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                status: nouveauStatut,
+                technician_id: technicianId
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert('Ticket mis à jour avec succès !');
+            document.getElementById('ticketModal').classList.remove('show');
+            location.reload();
+        })
+        .catch(err => console.error('Erreur lors de la mise à jour du ticket :', err));
+    };    
 
     // Fermeture de la modale
     document.getElementById('closeModal').addEventListener('click', function() {
@@ -242,29 +255,36 @@ function chargerMessages(ticketId) {
         const messagesContainer = document.getElementById('messages-container');
         messagesContainer.innerHTML = '';
 
-        // Utilisation de "userId" (camelCase comme dans l'ancien code)
         const userId = parseInt(localStorage.getItem('userId'));
 
         data.messages.forEach(message => {
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('message');
             
-            // Comparaison correcte des ID avec "userId"
             if (message.sender_id == userId) {
                 messageDiv.classList.add('user');
             } else {
                 messageDiv.classList.add('admin');
             }
 
-            messageDiv.innerHTML = `
-                <strong>${message.sender_name}</strong>
-                <p>${message.message}</p>
-                <span class="timestamp">${new Date(message.timestamp).toLocaleTimeString()}</span>
-            `;
+            // NE PAS utiliser innerHTML avec contenu utilisateur non échappé
+            const sender = document.createElement("strong");
+            sender.textContent = message.sender_name;
+
+            const msg = document.createElement("p");
+            msg.textContent = message.message; // safe car textContent
+
+            const time = document.createElement("span");
+            time.className = "timestamp";
+            time.textContent = new Date(message.timestamp).toLocaleTimeString();
+
+            messageDiv.appendChild(sender);
+            messageDiv.appendChild(msg);
+            messageDiv.appendChild(time);
+
             messagesContainer.appendChild(messageDiv);
         });
 
-        // Scroll automatique vers le bas
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     })
     .catch(err => console.error('Erreur lors du chargement des messages:', err));
@@ -300,24 +320,44 @@ function afficherDetailsTicket(ticketId) {
 
         document.getElementById('ticketModal').classList.add('show');
 
-        console.log("Rôle utilisateur:", userRole);
-
         if (userRole === 'admin') {
             document.getElementById('modal-ticket-status').disabled = false;
             document.getElementById('update-status-btn').style.display = 'block';
-        } else if (userRole === 'user') {
+            document.getElementById('modal-ticket-technician').disabled = false;
+
+            // Charger les techniciens
+            fetch(`${API_URL}/users`, {
+                method: 'GET',
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+            .then(res => res.json())
+            .then(users => {
+                const select = document.getElementById('modal-ticket-technician');
+                select.innerHTML = '<option value="">Non assigné</option>';
+                users
+                    .filter(u => u.role === 'admin')
+                    .forEach(user => {
+                        const option = document.createElement('option');
+                        option.value = user.id;
+                        option.textContent = user.username;
+                        if (parseInt(ticket.technician_id) === parseInt(user.id)) {
+                            option.selected = true;
+                        }
+                        select.appendChild(option);
+                    });
+            });
+        } else {
             document.getElementById('modal-ticket-status').disabled = true;
             document.getElementById('update-status-btn').style.display = 'none';
-        } else {
-            console.error("Rôle inconnu :", userRole);
+            document.getElementById('modal-ticket-technician').disabled = true;
         }
 
-        // Lancer le chargement des messages
         initialiserChargementMessages(ticketId);
 
-        document.getElementById('update-status-btn').onclick = function() {
+        document.getElementById('update-status-btn').onclick = function () {
             const nouveauStatut = document.getElementById('modal-ticket-status').value;
-            mettreAJourStatut(ticketId, nouveauStatut);
+            const technicianId = document.getElementById('modal-ticket-technician').value || null;
+            mettreAJourStatut(ticketId, nouveauStatut, technicianId);
         };
     })
     .catch(err => console.error('Erreur lors de l\'affichage du ticket:', err));

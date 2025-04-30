@@ -14,8 +14,8 @@
         <nav class="sidebar">
             <h2>FixMyIT</h2>
             <ul>
-                <li><a href="#" class="active">Dashboard</a></li>
-                <li><a href="#">Profil</a></li>
+                <li><a href="dashboard.html" class="active">Dashboard</a></li>
+                <li><a href="profile.html">Profil</a></li>
                 <li><a href="index.html">Déconnexion</a></li>
             </ul>
         </nav>
@@ -39,6 +39,7 @@
                             <th>Utilisateur</th>
                             <th>Description</th>
                             <th>Statut</th>
+                            <th>Technicien</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -48,6 +49,7 @@
             </div>
         </main>
     </div>
+
     <!-- Modal pour afficher le détail d'un ticket -->
     <div class="modal" id="ticketModal">
         <div class="modal-content">
@@ -63,28 +65,36 @@
                     <option value="Terminé">Terminé</option>
                 </select>
             </p>
-            <button class="action-btn" id="update-status-btn">Mettre à jour le statut</button>
+            <p><strong>Technicien :</strong>
+                <select id="modal-ticket-technician">
+                    <option value="">Non assigné</option>
+                </select>
+            </p>
+            <button class="action-btn" id="update-status-btn">Mettre à jour</button>
+
             <h3>Discussion</h3>
             <div id="messages-container" class="messages-container"></div>
             <textarea id="message-input" placeholder="Écrire un message..."></textarea>
             <button id="send-message-btn" class="action-btn">Envoyer</button>
         </div>
     </div>
-<!-- Bouton pour créer un ticket (seulement pour les utilisateurs lambda) -->
-<button id="creer-ticket-btn" class="create-ticket-btn">+</button>
 
-<!-- Modale pour créer un ticket -->
-<div id="createTicketModal" class="modal">
-    <div class="modal-content">
-        <span id="closeCreateModal" class="close-btn">&times;</span>
-        <h2>Créer un nouveau Ticket</h2>
-        <form id="create-ticket-form">
-            <input type="text" id="ticket-title" placeholder="Titre du ticket" required>
-            <textarea id="ticket-description" placeholder="Description" required></textarea>
-            <button type="submit" class="action-btn">Créer le Ticket</button>
-        </form>
+    <!-- Bouton pour créer un ticket (seulement pour les utilisateurs lambda) -->
+    <button id="creer-ticket-btn" class="create-ticket-btn">+</button>
+
+    <!-- Modale pour créer un ticket -->
+    <div id="createTicketModal" class="modal">
+        <div class="modal-content">
+            <span id="closeCreateModal" class="close-btn">&times;</span>
+            <h2>Créer un nouveau Ticket</h2>
+            <form id="create-ticket-form">
+                <input type="text" id="ticket-title" placeholder="Titre du ticket" required>
+                <textarea id="ticket-description" placeholder="Description" required></textarea>
+                <button type="submit" class="action-btn">Créer le Ticket</button>
+            </form>
+        </div>
     </div>
-</div>
+
     <script src="scriptdash.js"></script>
 </body>
 </html>
